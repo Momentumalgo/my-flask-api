@@ -1,40 +1,37 @@
+import openai
 import os
 from flask import Flask, request, jsonify
-import openai
-from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-# Load .env variables
+# Load environment variables
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Initialize Flask app
 app = Flask(__name__)
 
+# Set OpenAI API key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Define a route to process trading signals
 @app.route('/trade_data', methods=['POST'])
 def trade_data():
     data = request.get_json()
     print("Received data from EA:", data)
 
-    # Send data to ChatGPT
-    prompt = f"Based on this trading data: {data}, what trading action should I take?"
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=150
-    )
+    # Example OpenAI API request
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=f"Analyze the following trading data: {data}",
+            max_tokens=100
+        )
+        result = response['choices'][0]['text'].strip()
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
-    chat_response = response.choices[0].text.strip()
-    print("ChatGPT Response:", chat_response)
+    # Respond to the EA with the result
+    return jsonify({"command": "AdjustRisk", "new_risk_percent": 0.5, "analysis": result})
 
-    # Adjust time to MetaTrader server time (UTC+2)
-    server_time = datetime.utcnow() + timedelta(hours=2)
-
-    # Return the ChatGPT response to the EA
-    response_data = {
-        "command": chat_response,
-        "server_time": server_time.strftime("%Y-%m-%d %H:%M:%S")
-    }
-    return jsonify(response_data)
-
+# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
