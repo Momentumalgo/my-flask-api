@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Load the OpenAI API key from environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = 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
 
 # Route to handle trade data from EA
 @app.route('/trade_data', methods=['POST'])
