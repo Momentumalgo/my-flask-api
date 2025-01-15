@@ -1,30 +1,34 @@
 from flask import Flask, request, jsonify
-import openai
 import os
+
+# Load environment variables
 from dotenv import load_dotenv
-
-# Load environment variables from .env
 load_dotenv()
-
-# Set OpenAI API key
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
 app = Flask(__name__)
 
+# Route to handle trading data
 @app.route('/trade_data', methods=['POST'])
 def trade_data():
-    data = request.json
-    symbol = data.get('symbol', 'XAUUSD')
-    risk_percent = data.get('risk_percent', 1.0)
+    try:
+        # Get data from the request
+        data = request.get_json()
+        
+        # Extract values from the request
+        symbol = data.get('symbol')
+        risk_percent = data.get('risk_percent')
+        
+        # Process the data (example logic)
+        new_risk_percent = risk_percent * 0.5  # Example calculation
+        
+        # Create the response
+        response = {
+            "new_risk_percent": new_risk_percent,
+            "server_time": "2025-01-15T14:43:24Z"
+        }
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    # Use OpenAI API
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=f"Analyze the market for {symbol} with a risk percentage of {risk_percent}.",
-        max_tokens=50
-    )
-
-    return jsonify(response.choices[0].text.strip())
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
