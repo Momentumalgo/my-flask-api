@@ -1,37 +1,31 @@
-import openai
 import os
+import openai
 from flask import Flask, request, jsonify
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Set OpenAI API key
+# Load the OpenAI API key from environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Define a route to process trading signals
+# Route to handle trade data from EA
 @app.route('/trade_data', methods=['POST'])
 def trade_data():
     data = request.get_json()
     print("Received data from EA:", data)
 
-    # Example OpenAI API request
+    # Call OpenAI API for processing
     try:
         response = openai.Completion.create(
             engine="text-davinci-003",
-            prompt=f"Analyze the following trading data: {data}",
-            max_tokens=100
+            prompt=f"Process this trading data: {data}",
+            max_tokens=50
         )
-        result = response['choices'][0]['text'].strip()
+
+        return jsonify({"response": response['choices'][0]['text'].strip()})
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
 
-    # Respond to the EA with the result
-    return jsonify({"command": "AdjustRisk", "new_risk_percent": 0.5, "analysis": result})
-
-# Run the Flask app
+# Run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))
