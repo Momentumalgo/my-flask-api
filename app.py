@@ -17,7 +17,7 @@ def trade_data():
     return jsonify(response)
 
 # Route to handle the root URL
-@app.route('/https://momentumalgo.up.railway.app/')
+@app.route('/')
 def home():
     return "Welcome to the Flask API!"
 
