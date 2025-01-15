@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 Flask==2.0.3 
 gunicorn==20.1.0 
+=======
+Flask==2.0.3 
+gunicorn==20.1.0 
+>>>>>>> cf0d0b3 (Fix port issue for Railway)
