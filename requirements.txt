@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-Flask==2.0.3 
-gunicorn==20.1.0 
-=======
-Flask==2.0.3 
-gunicorn==20.1.0 
->>>>>>> cf0d0b3 (Fix port issue for Railway)
+Flask==3.1.0
+Werkzeug==2.3.7
+gunicorn==20.1.0
